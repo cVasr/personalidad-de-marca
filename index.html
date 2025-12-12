@@ -38,8 +38,10 @@
 
         .header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
+            text-align: center;
             margin-bottom: 48px;
             gap: 32px;
         }
@@ -97,6 +99,14 @@
         .input-group input::placeholder,
         .input-group textarea::placeholder {
             color: #666;
+        }
+
+        .input-group input:disabled,
+        .input-group textarea:disabled {
+            background-color: #0d0d0d;
+            border-color: #404040;
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .file-input-wrapper {
@@ -215,6 +225,35 @@
             font-weight: 600;
             color: #fff;
             margin-bottom: 32px;
+        }
+
+        .result-explanation {
+            padding: 24px;
+            background-color: rgba(191, 23, 68, 0.1);
+            border: 1px solid rgba(191, 23, 68, 0.3);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .result-explanation.active {
+            display: block;
+        }
+
+        .result-explanation h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFC300;
+            margin-bottom: 12px;
+            margin-top: 0;
+        }
+
+        .result-explanation p {
+            font-size: 13px;
+            color: #ccc;
+            line-height: 1.6;
+            margin: 0;
         }
 
         .scale {
@@ -679,8 +718,9 @@
         <div class="scales-container">
             <h2>Personalidad de la Marca</h2>
             <div id="scalesContainer"></div>
+            <div id="resultExplanation" class="result-explanation"></div>
             <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
-                <button class="btn btn-screenshot" id="screenshotBtn" disabled>Descargar Controlador</button>
+                <button class="btn btn-screenshot" id="screenshotBtn" disabled>Descargar personalidad</button>
             </div>
         </div>
 
@@ -858,7 +898,14 @@
                 .slice(0, 2)
                 .map(([obj, _]) => obj);
 
-            const brandName = brandNameEl.value.toUpperCase() || 'LA MARCA';
+            // Extraer nombre de la marca del documento
+            let brandName = brandNameEl.value.toUpperCase() || 'LA MARCA';
+            
+            // Buscar el nombre del negocio en el documento
+            const extractedDocName = extractBrandNameFromDocument(text);
+            if (extractedDocName) {
+                brandName = extractedDocName.toUpperCase();
+            }
 
             // Definiciones de tipos de marca
             const brandDefinitions = {
@@ -906,10 +953,10 @@
                 additionalContext = ' ' + (contextKeywords[brandType] || '');
             }
 
-            return `<h4 style="color: #BF1744; font-size: 16px; margin-bottom: 12px; margin-top: 0;">¿Qué es ${brandName}?</h4>
+            return `<h4 style="color: #FFC300; font-size: 16px; margin-bottom: 12px; margin-top: 0;">¿Qué es ${brandName}?</h4>
             <p style="margin-bottom: 16px;">${whatIs}${additionalContext}</p>
             
-            <h4 style="color: #BF1744; font-size: 16px; margin-bottom: 12px; margin-top: 16px;">Objetivo de ${brandName}</h4>
+            <h4 style="color: #FFC300; font-size: 16px; margin-bottom: 12px; margin-top: 16px;">Objetivo de ${brandName}</h4>
             <p style="margin-bottom: 0;">${objective}</p>`;
         }
 
@@ -967,6 +1014,73 @@
             screenshotBtnEl.disabled = false;
         }
 
+        function updateResultExplanation() {
+            const resultExplanationEl = document.getElementById('resultExplanation');
+            
+            if (!hasContent) {
+                resultExplanationEl.classList.remove('active');
+                return;
+            }
+
+            const brandName = (brandNameEl.value || 'la marca');
+            const capitalizedBrandName = brandName.charAt(0).toUpperCase() + brandName.slice(1);
+            const interpretations = [];
+
+            // Interpretar cada escala
+            const elitePos = positions.elite;
+            if (elitePos <= 25) {
+                interpretations.push(`${capitalizedBrandName} se posiciona como una marca <strong>élite y premium</strong>, enfocada en exclusividad, sofisticación y un alto nivel de especificidad.`);
+            } else if (elitePos >= 75) {
+                interpretations.push(`${capitalizedBrandName} es una marca <strong>accesible e inclusiva</strong>, que busca democratizar sus servicios y estar disponible para todos.`);
+            } else {
+                interpretations.push(`${capitalizedBrandName} presenta un balance entre exclusividad y accesibilidad en su posicionamiento.`);
+            }
+
+            const serioPos = positions.serio;
+            if (serioPos <= 25) {
+                interpretations.push(`Su tono es <strong>formal y profesional</strong>, transmitiendo seriedad, rigidez y un enfoque corporativo.`);
+            } else if (serioPos >= 75) {
+                interpretations.push(`Su tono es <strong>divertido y casual</strong>, buscando conectar con una audiencia de manera lúdica y energética.`);
+            } else {
+                interpretations.push(`Su tono combina elementos profesionales con toques de informalidad.`);
+            }
+
+            const convencionalPos = positions.convencional;
+            if (convencionalPos <= 25) {
+                interpretations.push(`${capitalizedBrandName} es <strong>tradicional y convencional</strong>, basada en valores establecidos y un enfoque histórico.`);
+            } else if (convencionalPos >= 75) {
+                interpretations.push(`${capitalizedBrandName} es <strong>rebelde e innovadora</strong>, desafiando convenciones y buscando transformar su industria.`);
+            } else {
+                interpretations.push(`${capitalizedBrandName} mantiene un equilibrio entre lo tradicional y lo innovador.`);
+            }
+
+            const amigablePos = positions.amigable;
+            if (amigablePos <= 25) {
+                interpretations.push(`En su relación con clientes, es <strong>amigable, cálida y humanizada</strong>, priorizando la empatía y la cercanía.`);
+            } else if (amigablePos >= 75) {
+                interpretations.push(`En su relación con clientes, adopta un rol más <strong>autoritario y formal</strong>, estableciendo límites claros.`);
+            } else {
+                interpretations.push(`En su relación con clientes, mantiene un balance entre la calidez personal y la estructura profesional.`);
+            }
+
+            const maduraPos = positions.madura;
+            if (maduraPos <= 25) {
+                interpretations.push(`Es una marca <strong>madura, clásica y consolidada</strong>, que transmite experiencia y estabilidad.`);
+            } else if (maduraPos >= 75) {
+                interpretations.push(`Es una marca <strong>joven, dinámica e innovadora</strong>, que representa frescos conceptos y disrupción.`);
+            } else {
+                interpretations.push(`Presenta una mezcla de madurez con elementos de dinamismo.`);
+            }
+
+            const explanationHTML = `
+                <h3>Resultado de Personalidad</h3>
+                <p>${interpretations.join(' ')}</p>
+            `;
+
+            document.getElementById('resultExplanation').innerHTML = explanationHTML;
+            resultExplanationEl.classList.add('active');
+        }
+
         function renderScales() {
             scalesContainerEl.innerHTML = scales.map(({ key, leftLabel, rightLabel }) => {
                 const position = positions[key];
@@ -1008,6 +1122,8 @@
                     draggingScale = e.currentTarget.dataset.scale;
                 });
             });
+
+            updateResultExplanation();
         }
 
         document.addEventListener('mousemove', (e) => {
@@ -1034,6 +1150,7 @@
 
         function clearAll() {
             brandNameEl.value = '';
+            brandNameEl.disabled = false;
             textInputEl.value = '';
             fileInputEl.value = '';
             fileNameEl.textContent = 'Seleccionar archivo';
@@ -1099,20 +1216,49 @@
             renderScales();
         });
 
+        function extractBrandNameFromDocument(text) {
+            const nameRegex = /(?:1\.|nombre\s+de\s+tu\s+negocio)[\s:]*([^\n]+)/i;
+            const nameMatch = text.match(nameRegex);
+            if (nameMatch && nameMatch[1]) {
+                const extractedName = nameMatch[1].trim();
+                if (extractedName && extractedName.length > 0) {
+                    return extractedName;
+                }
+            }
+            return null;
+        }
+
         fileInputEl.addEventListener('change', async (e) => {
             const file = e.target.files?.[0];
-            if (!file) return;
-
-            fileNameEl.textContent = file.name;
+            if (!file) {
+                // Si se elimina el archivo, habilitar el input
+                brandNameEl.disabled = false;
+                return;
+            }
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
                 const result = await mammoth.extractRawText({ arrayBuffer });
                 const extractedText = result.value;
+                
+                // Extraer nombre de marca del documento
+                const extractedName = extractBrandNameFromDocument(extractedText);
+                
+                if (extractedName) {
+                    // Si se encuentra nombre, actualizar el input y deshabilitarlo
+                    brandNameEl.value = extractedName;
+                    brandNameEl.disabled = true;
+                } else {
+                    // Si no hay nombre en el documento, habilitar el input
+                    brandNameEl.disabled = false;
+                }
+                
+                fileNameEl.textContent = file.name;
                 // NO asignar al textarea - solo usar para análisis
                 generateAdvancedAnalysis(extractedText);
             } catch (error) {
                 alert('Error al procesar el archivo: ' + error.message);
+                brandNameEl.disabled = false;
             }
         });
 
