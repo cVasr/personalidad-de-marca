@@ -1025,26 +1025,31 @@
             }
 
             const lines = text.split('\n');
-            let hasError = false;
+            let hasMultipleWordsPerLine = false;
 
+            // Verificar si hay líneas con múltiples palabras separadas por espacios
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (line.length === 0) continue; // Ignorar líneas vacías
 
-                // Contar espacios en la línea (una palabra no debe tener espacios)
-                if (line.includes(' ')) {
-                    textInputErrorEl.textContent = 'Solo se puede agregar una palabra por línea';
-                    textInputErrorEl.classList.add('active');
-                    hasError = true;
+                // Contar espacios en la línea
+                const wordCount = line.split(/\s+/).length;
+                if (wordCount > 1) {
+                    hasMultipleWordsPerLine = true;
                     break;
                 }
             }
 
-            if (!hasError) {
+            if (hasMultipleWordsPerLine) {
+                // Convertir automáticamente palabras separadas por espacios a líneas
+                const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+                textInputEl.value = words.join('\n');
                 textInputErrorEl.classList.remove('active');
+                return true;
             }
 
-            return !hasError;
+            textInputErrorEl.classList.remove('active');
+            return true;
         }
 
         textInputEl.addEventListener('input', (e) => {
