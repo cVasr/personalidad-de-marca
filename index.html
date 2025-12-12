@@ -1217,14 +1217,32 @@
         });
 
         function extractBrandNameFromDocument(text) {
-            const nameRegex = /(?:1\.|nombre\s+de\s+tu\s+negocio)[\s:]*([^\n]+)/i;
+            // Buscar patrones como:
+            // "1. Nombre de tu negocio: Respuesta"
+            // "1. Nombre de tu negocio - Respuesta"
+            // "1. Nombre de tu negocio\nRespuesta"
+            const nameRegex = /1\.\s*nombre\s+de\s+tu\s+negocio\s*[:–-]?\s*([^\n]+)/i;
             const nameMatch = text.match(nameRegex);
+            
             if (nameMatch && nameMatch[1]) {
                 const extractedName = nameMatch[1].trim();
-                if (extractedName && extractedName.length > 0) {
+                // Filtrar si es solo el placeholder
+                if (extractedName && extractedName.length > 0 && extractedName.toUpperCase() !== 'NOMBRE DE TU NEGOCIO') {
                     return extractedName;
                 }
             }
+            
+            // Si no encuentra en la misma línea, buscar en la siguiente línea
+            const multilineRegex = /1\.\s*nombre\s+de\s+tu\s+negocio[^\n]*\n\s*([^\n]+)/i;
+            const multilineMatch = text.match(multilineRegex);
+            
+            if (multilineMatch && multilineMatch[1]) {
+                const extractedName = multilineMatch[1].trim();
+                if (extractedName && extractedName.length > 0 && extractedName.toUpperCase() !== 'NOMBRE DE TU NEGOCIO') {
+                    return extractedName;
+                }
+            }
+            
             return null;
         }
 
