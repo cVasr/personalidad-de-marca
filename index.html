@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analizador de Personalidad de Marca</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/cVasr/personalidad-de-marca/refs/heads/main/favicon.png">
     <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -307,7 +308,7 @@
             position: absolute;
             width: 1px;
             height: 6px;
-            background-color: #BF1744;
+            background-color: #545454;
             left: 50%;
             top: 100%;
             margin-left: -0.5px;
@@ -333,7 +334,7 @@
         .scale-position-label {
             font-size: 12px;
             text-align: center;
-            color: #FFC300;
+            color: #545454;
             font-weight: 600;
             margin-top: 8px;
         }
@@ -418,16 +419,47 @@
             padding: 24px;
             text-align: center;
             border-top: 1px solid #545454;
+            background-color: #080808;
         }
 
         .footer-content {
             max-width: 1140px;
             margin: 0 auto;
             display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .footer-left {
+            display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 16px;
+            gap: 8px;
+        }
+
+        .footer-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .footer-contact {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .footer-contact a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .footer-contact a:hover {
+            color: #BF1744;
         }
 
         .footer-logo {
@@ -440,7 +472,7 @@
         }
 
         .footer-link {
-            color: #BF1744;
+            color: #fff;
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
@@ -448,7 +480,7 @@
         }
 
         .footer-link:hover {
-            color: #FFC300;
+            color: #BF1744;
         }
 
         @media (max-width: 1024px) {
@@ -543,6 +575,20 @@
             .modal-content {
                 width: 95%;
                 padding: 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .footer-left {
+                flex-direction: column;
+            }
+
+            .footer-right {
+                align-items: center;
             }
         }
 
@@ -644,38 +690,26 @@
             <div id="analysisContent"></div>
         </div>
 
-        <!-- Info Boxes -->
-        <div class="info-section">
-            <div class="info-box">
-                <h3>Cómo usar</h3>
-                <ul>
-                    <li>Escribe el nombre de tu marca</li>
-                    <li>Pega palabras clave o el formulario completo</li>
-                    <li>O carga un documento .docx</li>
-                    <li>El sistema posicionará automáticamente</li>
-                    <li>Ajusta manualmente con los sliders si necesitas</li>
-                </ul>
-            </div>
-            <div class="info-box">
-                <h3>Información</h3>
-                <ul>
-                    <li>Analizador creado por Gabriel Sebastian Web</li>
-                    <li>Análisis automático de palabras clave</li>
-                    <li>Soporta archivos .docx</li>
-                    <li>Interfaz intuitiva y accesible</li>
-                    <li>Diseño profesional y moderno</li>
-                </ul>
-            </div>
-        </div>
+
     </div>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <div class="footer-logo">
-                <img id="footerLogo" src="https://via.placeholder.com/40x40?text=Logo" alt="Gabriel Sebastian Web">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <img id="footerLogo" src="https://raw.githubusercontent.com/cVasr/personalidad-de-marca/refs/heads/main/logo.png" alt="Gabriel Sebastian Web">
+                </div>
+                <a href="https://gabrielsebastianweb.com/" class="footer-link" target="_blank">gabrielsebastianweb.com</a>
             </div>
-            <a href="https://gabrielsebastianweb.com/" class="footer-link" target="_blank">gabrielsebastianweb.com</a>
+            <div class="footer-right">
+                <div class="footer-contact">
+                    <a href="mailto:contacto@gabrielsebastianweb.com">contacto@gabrielsebastianweb.com</a>
+                </div>
+                <div class="footer-contact">
+                    <a href="https://api.whatsapp.com/send?phone=3185881102" target="_blank">(+57) 318 588 1102</a>
+                </div>
+            </div>
         </div>
     </footer>
 
