@@ -1266,6 +1266,9 @@
                     // Si se encuentra nombre, actualizar el input y deshabilitarlo
                     brandNameEl.value = extractedName;
                     brandNameEl.disabled = true;
+                    // Re-renderizar las escalas para actualizar el marcador con el nuevo nombre
+                    // PERO no activamos hasContent para que los sliders permanezcan deshabilitados
+                    renderScales();
                 } else {
                     // Si no hay nombre en el documento, habilitar el input
                     brandNameEl.disabled = false;
@@ -1273,7 +1276,7 @@
                 
                 fileNameEl.textContent = file.name;
                 
-                // DESPUÉS generar el análisis, para que use el nombre correcto
+                // Generar el análisis del documento
                 generateAdvancedAnalysis(extractedText);
             } catch (error) {
                 alert('Error al procesar el archivo: ' + error.message);
