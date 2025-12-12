@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analizador de Personalidad de Marca</title>
+    <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-color: #0D0D0D;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 48px 24px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 48px;
+            gap: 32px;
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .header-text p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            padding: 12px 16px;
+            border-radius: 6px;
+            background-color: #1a1a1a;
+            border: 1px solid #545454;
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            resize: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #BF1744;
+        }
+
+        .input-group input::placeholder,
+        .input-group textarea::placeholder {
+            color: #666;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            background-color: #1a1a1a;
+            border: 1px solid #545454;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .file-input-wrapper:hover {
+            border-color: #BF1744;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        .file-input-text {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .textarea-section {
+            margin-bottom: 16px;
+        }
+
+        .textarea-section textarea {
+            width: 100%;
+            height: 140px;
+        }
+
+        .textarea-error {
+            font-size: 12px;
+            color: #FF6B6B;
+            margin-top: 8px;
+            display: none;
+            padding: 8px 12px;
+            background-color: rgba(255, 107, 107, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #FF6B6B;
+        }
+
+        .textarea-error.active {
+            display: block;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #BF1744;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #a01235;
+        }
+
+        .btn-primary:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-screenshot {
+            background-color: #FFC300;
+            color: #0D0D0D;
+            margin-left: 12px;
+        }
+
+        .btn-screenshot:hover {
+            background-color: #e6b000;
+        }
+
+        .btn-screenshot:disabled {
+            background-color: #555;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .scales-container {
+            border-radius: 8px;
+            padding: 32px;
+            background-color: transparent;
+            border: 1px solid #545454;
+            margin-bottom: 32px;
+        }
+
+        .scales-container h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 32px;
+        }
+
+        .scale {
+            margin-bottom: 32px;
+        }
+
+        .scale:last-child {
+            margin-bottom: 0;
+        }
+
+        .scale-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 32px;
+            margin-bottom: 12px;
+        }
+
+        .scale-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            padding-top: 8px;
+            flex-shrink: 0;
+            width: 120px;
+            white-space: normal;
+            overflow: visible;
+        }
+
+        .scale-label.left {
+            text-align: right;
+        }
+
+        .scale-label.right {
+            text-align: left;
+        }
+
+        .scale-line {
+            flex: 1;
+            position: relative;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background-color: #545454;
+            top: 50%;
+            left: 0;
+        }
+
+        .center-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #545454;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .marker {
+            position: absolute;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            transition: left 0.1s ease;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .marker-box {
+            background-color: #BF1744;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+            width: 140px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .marker-line {
+            position: absolute;
+            width: 1px;
+            height: 6px;
+            background-color: #BF1744;
+            left: 50%;
+            top: 100%;
+            margin-left: -0.5px;
+            margin-top: 4px;
+            transform: translateX(-50%);
+        }
+
+        .scale-slider {
+            position: absolute;
+            width: 100%;
+            height: 24px;
+            opacity: 0;
+            cursor: pointer;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0;
+        }
+
+        .scale-slider:disabled {
+            cursor: not-allowed;
+        }
+
+        .scale-position-label {
+            font-size: 12px;
+            text-align: center;
+            color: #FFC300;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .document-analysis {
+            padding: 24px;
+            border-radius: 8px;
+            background-color: transparent;
+            border: 1px solid #545454;
+            margin-bottom: 32px;
+            display: none;
+        }
+
+        .document-analysis.active {
+            display: block;
+        }
+
+        .document-analysis h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .document-analysis p {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .document-analysis p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .info-box {
+            padding: 24px;
+            border-radius: 8px;
+            background-color: transparent;
+            border: 1px solid #545454;
+        }
+
+        .info-box h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .info-box ul {
+            list-style: none;
+        }
+
+        .info-box li {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .info-box li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #FFC300;
+        }
+
+        .info-box li:last-child {
+            margin-bottom: 0;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 24px;
+            text-align: center;
+            border-top: 1px solid #545454;
+        }
+
+        .footer-content {
+            max-width: 1140px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .footer-logo {
+            flex-shrink: 0;
+        }
+
+        .footer-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .footer-link {
+            color: #BF1744;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .footer-link:hover {
+            color: #FFC300;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .scale-label {
+                width: 100px;
+            }
+
+            .marker-box {
+                width: 130px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 32px 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-text h1 {
+                font-size: 24px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .scales-container {
+                padding: 24px 16px;
+            }
+
+            .scale-row {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .scale-label {
+                font-size: 12px;
+                padding: 0;
+                width: 100%;
+                white-space: normal;
+                overflow: visible;
+            }
+
+            .scale-label.left {
+                text-align: left;
+            }
+
+            .scale-label.right {
+                text-align: right;
+            }
+
+            .scale-line {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .marker-box {
+                width: 110px;
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+
+            .scale {
+                margin-bottom: 24px;
+            }
+
+            .textarea-section textarea {
+                height: 120px;
+            }
+
+            .btn-screenshot {
+                margin-left: 0;
+                margin-top: 12px;
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 12px;
+            }
+
+            .header-text h1 {
+                font-size: 20px;
+            }
+
+            .scales-container {
+                padding: 16px 12px;
+            }
+
+            .scale-row {
+                gap: 16px;
+            }
+
+            .scale-label {
+                font-size: 11px;
+                white-space: normal;
+                overflow: visible;
+            }
+
+            .marker-box {
+                width: 85px;
+                font-size: 8px;
+                padding: 3px 6px;
+            }
+
+            .scale-position-label {
+                font-size: 11px;
+            }
+
+            .modal-header h2 {
+                font-size: 20px;
+            }
+
+            .modal-body p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-text">
+                <h1>Analizador de Personalidad de Marca</h1>
+                <p>Posiciona tu marca en las 5 escalas de personalidad de forma automática</p>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-grid">
+            <div class="input-group">
+                <label>Nombre de la marca</label>
+                <input type="text" id="brandName" value="MEDUPROX" placeholder="Ej: MEDUPROX">
+            </div>
+
+            <div class="input-group">
+                <label>Cargar documento .docx</label>
+                <label class="file-input-wrapper">
+                    <input type="file" id="fileInput" accept=".docx">
+                    <span class="file-input-text" id="fileName">Seleccionar archivo</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Textarea Section -->
+        <div class="textarea-section">
+            <div class="input-group">
+                <label>Palabras Claves</label>
+                <textarea id="textInput" placeholder="Una palabra por línea. Ejemplo: innovador, digital, accesible..."></textarea>
+            </div>
+            <div class="textarea-error" id="textInputError"></div>
+        </div>
+
+        <!-- Button -->
+        <div class="button-row">
+            <button class="btn btn-primary" id="clearBtn">Reiniciar</button>
+        </div>
+
+        <!-- Scales -->
+        <div class="scales-container">
+            <h2>Personalidad de la Marca</h2>
+            <div id="scalesContainer"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                <button class="btn btn-screenshot" id="screenshotBtn" disabled>Descargar Controlador</button>
+            </div>
+        </div>
+
+        <!-- Análisis del Documento -->
+        <div class="document-analysis" id="documentAnalysis">
+            <h3>Análisis del Documento</h3>
+            <div id="analysisContent"></div>
+        </div>
+
+        <!-- Info Boxes -->
+        <div class="info-section">
+            <div class="info-box">
+                <h3>Cómo usar</h3>
+                <ul>
+                    <li>Escribe el nombre de tu marca</li>
+                    <li>Pega palabras clave o el formulario completo</li>
+                    <li>O carga un documento .docx</li>
+                    <li>El sistema posicionará automáticamente</li>
+                    <li>Ajusta manualmente con los sliders si necesitas</li>
+                </ul>
+            </div>
+            <div class="info-box">
+                <h3>Información</h3>
+                <ul>
+                    <li>Analizador creado por Gabriel Sebastian Web</li>
+                    <li>Análisis automático de palabras clave</li>
+                    <li>Soporta archivos .docx</li>
+                    <li>Interfaz intuitiva y accesible</li>
+                    <li>Diseño profesional y moderno</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img id="footerLogo" src="https://via.placeholder.com/40x40?text=Logo" alt="Gabriel Sebastian Web">
+            </div>
+            <a href="https://gabrielsebastianweb.com/" class="footer-link" target="_blank">gabrielsebastianweb.com</a>
+        </div>
+    </footer>
+
+    <script>
+        const BRAND_COLORS = {
+            dark: '#0D0D0D',
+            primary: '#BF1744',
+            secondary: '#FFC300'
+        };
+
+        // Posiciones discretas: 3 por mitad + centro
+        const POSITIONS = [10, 25, 40, 50, 60, 75, 90];
+        
+        function getLabel(position, leftLabel, rightLabel) {
+            const labelMap = {
+                10: `Muy ${leftLabel}`,
+                25: `Bastante ${leftLabel}`,
+                40: `Ligeramente ${leftLabel}`,
+                50: 'En la mitad',
+                60: `Ligeramente ${rightLabel}`,
+                75: `Bastante ${rightLabel}`,
+                90: `Muy ${rightLabel}`
+            };
+            return labelMap[position] || '';
+        }
+
+        const keywordMap = {
+            elite: {
+                left: ['lujo', 'premium', 'exclusivo', 'sofisticado', 'elegante', 'selecto', 'alto nivel', 'prestigious', 'refinado', 'elite'],
+                right: ['accesible', 'amigable', 'democrático', 'inclusivo', 'abierto', 'directo', 'simple', 'fácil', 'cercano', 'disponible']
+            },
+            serio: {
+                left: ['serio', 'formal', 'profesional', 'riguroso', 'corporativo', 'técnico', 'especializado', 'tradicional', 'institucional', 'académico'],
+                right: ['divertido', 'lúdico', 'playful', 'casual', 'relajado', 'informal', 'espontáneo', 'jovial', 'energético', 'lúdica', 'motivacional', 'inspirador']
+            },
+            convencional: {
+                left: ['tradicional', 'convencional', 'clásico', 'establecido', 'probado', 'conservador', 'formal', 'histórico', 'heritage'],
+                right: ['rebelde', 'innovador', 'disruptivo', 'moderno', 'experimental', 'vanguardia', 'desafiante', 'progresista', 'innovación', 'tecnológico', 'tecnologia']
+            },
+            amigable: {
+                left: ['amigable', 'cálido', 'cercano', 'humanizado', 'empático', 'accesible', 'informal', 'colaborativo', 'confiable', 'educativo'],
+                right: ['autoritario', 'distante', 'formal', 'impositivo', 'riguroso', 'jerárquico', 'frío', 'impersonal']
+            },
+            madura: {
+                left: ['madura', 'clásico', 'sofisticado', 'experimentado', 'heritage', 'tradición', 'consolidado', 'estable', 'maduro'],
+                right: ['joven', 'innovador', 'fresco', 'dinámico', 'moderno', 'emergente', 'tecnológico', 'exponencial', 'disruptivo', 'crecimiento', 'jóven']
+            }
+        };
+
+        const scales = [
+            { key: 'elite', leftLabel: 'Élite', rightLabel: 'Accesible' },
+            { key: 'serio', leftLabel: 'Serio', rightLabel: 'Divertido' },
+            { key: 'convencional', leftLabel: 'Convencional', rightLabel: 'Rebelde' },
+            { key: 'amigable', leftLabel: 'Amigable', rightLabel: 'Autoritario' },
+            { key: 'madura', leftLabel: 'Madura y Clásica', rightLabel: 'Joven e Innovador' }
+        ];
+
+        let positions = {
+            elite: 50,
+            serio: 50,
+            convencional: 50,
+            amigable: 50,
+            madura: 50
+        };
+
+        let hasContent = false;
+
+        const brandNameEl = document.getElementById('brandName');
+        const textInputEl = document.getElementById('textInput');
+        const fileInputEl = document.getElementById('fileInput');
+        const fileNameEl = document.getElementById('fileName');
+        const clearBtnEl = document.getElementById('clearBtn');
+        const scalesContainerEl = document.getElementById('scalesContainer');
+        const analysisContainerEl = document.getElementById('documentAnalysis');
+        const analysisContentEl = document.getElementById('analysisContent');
+        const screenshotBtnEl = document.getElementById('screenshotBtn');
+        const textInputErrorEl = document.getElementById('textInputError');
+
+        let draggingScale = null;
+        let isDragging = false;
+
+        function snapToClosest(value) {
+            let closest = POSITIONS[0];
+            let minDist = Math.abs(value - POSITIONS[0]);
+            
+            for (let pos of POSITIONS) {
+                const dist = Math.abs(value - pos);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = pos;
+                }
+            }
+            return closest;
+        }
+
+        function analyzeDocumentKeywords(text) {
+            const lowerText = text.toLowerCase();
+            
+            // Palabras clave para identificar tipo de marca
+            const brandTypeKeywords = {
+                tech: ['tecnología', 'tecnológico', 'software', 'digital', 'app', 'plataforma', 'desarrollo', 'código', 'sistema', 'innovación', 'disruptivo', 'exponencial'],
+                educacion: ['educación', 'educativo', 'aprendizaje', 'formación', 'estudiantes', 'profesional', 'profesionales', 'cursos', 'capacitación', 'enseñanza', 'conocimiento'],
+                salud: ['salud', 'médico', 'médica', 'bienestar', 'cuidado', 'wellness', 'terapia', 'sanidad', 'salud mental', 'nutrición'],
+                ecommerce: ['tienda', 'compra', 'venta', 'producto', 'productos', 'cliente', 'clientes', 'precio', 'catálogo', 'comercio', 'online'],
+                finanzas: ['dinero', 'inversión', 'banco', 'financiero', 'crédito', 'préstamo', 'ahorro', 'fondos', 'capital', 'bolsa'],
+                marketing: ['marketing', 'publicidad', 'branding', 'marca', 'estrategia', 'comunicación', 'diseño', 'campaña', 'contenido'],
+                servicios: ['servicio', 'servicios', 'cliente', 'clientes', 'consultoría', 'solución', 'soporte', 'asesoría', 'consultor'],
+                comunidad: ['comunidad', 'social', 'red', 'conexión', 'usuarios', 'miembros', 'participación', 'colaboración']
+            };
+
+            // Palabras clave para objetivos
+            const objectiveKeywords = {
+                crecimiento: ['crecimiento', 'escalable', 'expandir', 'exponencial', 'desarrollar', 'ampliar', 'escala', 'global'],
+                accesibilidad: ['accesible', 'democrático', 'inclusivo', 'para todos', 'abierto', 'asequible', 'disponible', 'fácil'],
+                innovacion: ['innovación', 'innovador', 'nuevo', 'disruptivo', 'cambio', 'transformación', 'futuro', 'tecnología'],
+                calidad: ['calidad', 'excelencia', 'premium', 'profesional', 'riguroso', 'estándar', 'confiable'],
+                conexion: ['conexión', 'conectar', 'comunidad', 'relación', 'empatía', 'humanidad', 'cercanía', 'vínculo'],
+                educacion: ['educación', 'educar', 'aprendizaje', 'conocimiento', 'enseñanza', 'formación', 'capacitación']
+            };
+
+            // Contar palabras clave por tipo
+            let brandScores = {};
+            for (let [type, keywords] of Object.entries(brandTypeKeywords)) {
+                brandScores[type] = keywords.reduce((sum, kw) => {
+                    return sum + (lowerText.match(new RegExp(kw, 'g')) || []).length;
+                }, 0);
+            }
+
+            // Encontrar tipo de marca dominante
+            let brandType = Object.keys(brandScores).reduce((a, b) => 
+                brandScores[a] > brandScores[b] ? a : b
+            );
+
+            // Contar objetivos
+            let objectiveScores = {};
+            for (let [obj, keywords] of Object.entries(objectiveKeywords)) {
+                objectiveScores[obj] = keywords.reduce((sum, kw) => {
+                    return sum + (lowerText.match(new RegExp(kw, 'g')) || []).length;
+                }, 0);
+            }
+
+            // Encontrar objetivos principales (máximo 2)
+            let topObjectives = Object.entries(objectiveScores)
+                .filter(([_, score]) => score > 0)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 2)
+                .map(([obj, _]) => obj);
+
+            return { brandType, topObjectives };
+        }
+
+        function generateDocumentAnalysis(text) {
+            const { brandType, topObjectives } = analyzeDocumentKeywords(text);
+
+            const brandDescriptions = {
+                tech: 'una empresa de tecnología e innovación digital',
+                educacion: 'una plataforma educativa y de formación profesional',
+                salud: 'una empresa de salud y bienestar',
+                ecommerce: 'una plataforma de comercio electrónico',
+                finanzas: 'una institución de servicios financieros',
+                marketing: 'una agencia de marketing y branding',
+                servicios: 'una empresa de servicios profesionales',
+                comunidad: 'una plataforma comunitaria y de conexión social'
+            };
+
+            const objectiveDescriptions = {
+                crecimiento: 'el escalamiento y la expansión de mercado',
+                accesibilidad: 'la democratización y accesibilidad del servicio',
+                innovacion: 'la transformación e innovación constante',
+                calidad: 'la excelencia y la confiabilidad profesional',
+                conexion: 'la construcción de relaciones y comunidad',
+                educacion: 'la educación y el empoderamiento del usuario'
+            };
+
+            let analysis = `Esta es ${brandDescriptions[brandType] || 'una marca única y diferenciada'}. `;
+
+            if (topObjectives.length > 0) {
+                analysis += 'Su objetivo principal se enfoca en ';
+                if (topObjectives.length === 1) {
+                    analysis += objectiveDescriptions[topObjectives[0]] + '.';
+                } else {
+                    analysis += objectiveDescriptions[topObjectives[0]] + ' y en ' + 
+                                objectiveDescriptions[topObjectives[1]] + '.';
+                }
+            } else {
+                analysis += 'Busca proporcionar valor significativo a su audiencia.';
+            }
+
+            return analysis;
+        }
+
+        function displayDocumentAnalysis(text) {
+            if (!text || text.trim().length < 10) {
+                analysisContainerEl.classList.remove('active');
+                return;
+            }
+
+            const analysis = generateDocumentAnalysis(text);
+            analysisContentEl.innerHTML = `<p>${analysis}</p>`;
+            analysisContainerEl.classList.add('active');
+        }
+
+        async function generateAdvancedAnalysis(documentText) {
+            try {
+                analysisContainerEl.classList.add('active');
+                analysisContentEl.innerHTML = '<p style="color: #999; font-style: italic;">Analizando documento...</p>';
+
+                const prompt = `Basándote en el siguiente documento sobre una marca, proporciona un análisis conciso en máximo 2 párrafos que incluya:
+
+1. **Qué es la marca**: Describe brevemente qué tipo de empresa o marca es, su industria, y su naturaleza.
+2. **Objetivo de la marca**: Explica cuál es su objetivo principal y qué busca lograr.
+
+El análisis debe ser claro, profesional y escrito en un tono informativo.
+
+---
+DOCUMENTO:
+${documentText}
+
+---
+Responde SOLO con los 2 párrafos, sin títulos ni numeraciones.`;
+
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 500,
+                        messages: [
+                            { role: 'user', content: prompt }
+                        ],
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.content && data.content.length > 0) {
+                    const analysis = data.content[0].text;
+                    analysisContentEl.innerHTML = `<p>${analysis}</p>`;
+                } else {
+                    analysisContentEl.innerHTML = '<p style="color: #999;">No se pudo generar el análisis. Intenta nuevamente.</p>';
+                }
+            } catch (error) {
+                console.error('Error en análisis avanzado:', error);
+                analysisContentEl.innerHTML = '<p style="color: #FF6B6B;">Error al analizar el documento. Por favor, intenta de nuevo.</p>';
+            }
+        }
+
+        function analyzeText(text) {
+            const lowerText = text.toLowerCase();
+            hasContent = true;
+
+            Object.keys(keywordMap).forEach((scale) => {
+                let leftScore = 0;
+                let rightScore = 0;
+                let totalMatches = 0;
+
+                keywordMap[scale].left.forEach((keyword) => {
+                    const count = (lowerText.match(new RegExp(keyword, 'g')) || []).length;
+                    leftScore += count;
+                    totalMatches += count;
+                });
+
+                keywordMap[scale].right.forEach((keyword) => {
+                    const count = (lowerText.match(new RegExp(keyword, 'g')) || []).length;
+                    rightScore += count;
+                    totalMatches += count;
+                });
+
+                if (totalMatches > 0) {
+                    const ratio = rightScore / (leftScore + rightScore);
+                    positions[scale] = Math.round(ratio * 100);
+                    positions[scale] = snapToClosest(positions[scale]);
+                }
+            });
+
+            renderScales();
+            screenshotBtnEl.disabled = false;
+        }
+
+        function renderScales() {
+            scalesContainerEl.innerHTML = scales.map(({ key, leftLabel, rightLabel }) => {
+                const position = positions[key];
+                const brandName = brandNameEl.value.toUpperCase() || 'MARCA';
+                const label = getLabel(position, leftLabel, rightLabel);
+                
+                return `
+                    <div class="scale">
+                        <div class="scale-row">
+                            <div class="scale-label left">${leftLabel}</div>
+                            <div class="scale-line">
+                                <div class="line"></div>
+                                <div class="center-dot"></div>
+                                <div class="marker" style="left: ${position}%">
+                                    <div class="marker-box" title="${brandName}">${brandName}</div>
+                                    <div class="marker-line"></div>
+                                </div>
+                                <input type="range" class="scale-slider" min="0" max="100" value="${position}" data-scale="${key}" ${!hasContent ? 'disabled' : ''}>
+                            </div>
+                            <div class="scale-label right">${rightLabel}</div>
+                        </div>
+                        <div class="scale-position-label">${label}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add event listeners to sliders
+            document.querySelectorAll('.scale-slider').forEach(slider => {
+                slider.addEventListener('input', (e) => {
+                    let value = parseInt(e.target.value);
+                    value = snapToClosest(value);
+                    positions[e.target.dataset.scale] = value;
+                    renderScales();
+                });
+
+                // Activate drag from slider/line area
+                slider.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    draggingScale = e.currentTarget.dataset.scale;
+                });
+            });
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging || !draggingScale) return;
+
+            const slider = document.querySelector(`input[data-scale="${draggingScale}"]`);
+            const rect = slider.getBoundingClientRect();
+            
+            let x = e.clientX - rect.left;
+            x = Math.max(0, Math.min(x, rect.width));
+            
+            let percentage = Math.round((x / rect.width) * 100);
+            percentage = snapToClosest(percentage);
+            positions[draggingScale] = percentage;
+            renderScales();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                draggingScale = null;
+            }
+        });
+
+        function clearAll() {
+            brandNameEl.value = 'MEDUPROX';
+            textInputEl.value = '';
+            fileInputEl.value = '';
+            fileNameEl.textContent = 'Seleccionar archivo';
+            positions = {
+                elite: 50,
+                serio: 50,
+                convencional: 50,
+                amigable: 50,
+                madura: 50
+            };
+            hasContent = false;
+            analysisContainerEl.classList.remove('active');
+            screenshotBtnEl.disabled = true;
+            textInputErrorEl.classList.remove('active');
+            renderScales();
+        }
+
+        function validateKeywordsFormat(text) {
+            if (!text.trim()) {
+                textInputErrorEl.classList.remove('active');
+                return true;
+            }
+
+            const lines = text.split('\n');
+            let hasError = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.length === 0) continue; // Ignorar líneas vacías
+
+                // Contar espacios en la línea (una palabra no debe tener espacios)
+                if (line.includes(' ')) {
+                    textInputErrorEl.textContent = 'Solo se puede agregar una palabra por línea';
+                    textInputErrorEl.classList.add('active');
+                    hasError = true;
+                    break;
+                }
+            }
+
+            if (!hasError) {
+                textInputErrorEl.classList.remove('active');
+            }
+
+            return !hasError;
+        }
+
+        textInputEl.addEventListener('input', (e) => {
+            const text = e.target.value;
+            const isValid = validateKeywordsFormat(text);
+
+            if (isValid && text.trim().length > 10) {
+                analyzeText(text);
+                analysisContainerEl.classList.remove('active');
+            }
+        });
+
+        brandNameEl.addEventListener('input', () => {
+            renderScales();
+        });
+
+        fileInputEl.addEventListener('change', async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            fileNameEl.textContent = file.name;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.extractRawText({ arrayBuffer });
+                const extractedText = result.value;
+                // NO asignar al textarea - solo usar para análisis
+                generateAdvancedAnalysis(extractedText);
+            } catch (error) {
+                alert('Error al procesar el archivo: ' + error.message);
+            }
+        });
+
+        clearBtnEl.addEventListener('click', clearAll);
+
+        function takeScreenshot() {
+            const element = scalesContainerEl;
+            const brandName = brandNameEl.value.toUpperCase() || 'marca';
+            const timestamp = new Date().toISOString().slice(0, 10);
+            const filename = `${brandName}-controlador-${timestamp}.png`;
+
+            html2canvas(element, {
+                scale: 3,
+                backgroundColor: '#0D0D0D',
+                logging: false,
+                allowTaint: true,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(error => {
+                console.error('Error al capturar pantalla:', error);
+                alert('Error al descargar el controlador. Por favor, intenta de nuevo.');
+            });
+        }
+
+        screenshotBtnEl.addEventListener('click', takeScreenshot);
+
+        renderScales();
+    </script>
+</body>
+</html>
