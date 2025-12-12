@@ -915,7 +915,6 @@
 
         function displayDocumentAnalysis(text) {
             if (!text || text.trim().length < 10) {
-                analysisContainerEl.classList.remove('active');
                 return;
             }
 
@@ -1092,7 +1091,7 @@
 
             if (isValid && text.trim().length > 10) {
                 analyzeText(text);
-                analysisContainerEl.classList.remove('active');
+                // Mantener visible el análisis del documento si está activo
             }
         });
 
