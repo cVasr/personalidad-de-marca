@@ -1241,7 +1241,7 @@
                 const result = await mammoth.extractRawText({ arrayBuffer });
                 const extractedText = result.value;
                 
-                // Extraer nombre de marca del documento
+                // Extraer nombre de marca del documento PRIMERO
                 const extractedName = extractBrandNameFromDocument(extractedText);
                 
                 if (extractedName) {
@@ -1254,7 +1254,8 @@
                 }
                 
                 fileNameEl.textContent = file.name;
-                // NO asignar al textarea - solo usar para análisis
+                
+                // DESPUÉS generar el análisis, para que use el nombre correcto
                 generateAdvancedAnalysis(extractedText);
             } catch (error) {
                 alert('Error al procesar el archivo: ' + error.message);
