@@ -603,7 +603,7 @@
         <div class="input-grid">
             <div class="input-group">
                 <label>Nombre de la marca</label>
-                <input type="text" id="brandName" value="MEDUPROX" placeholder="Ej: MEDUPROX">
+                <input type="text" id="brandName" placeholder="Ej: Tu marca aquí">
             </div>
 
             <div class="input-group">
@@ -881,46 +881,11 @@
         async function generateAdvancedAnalysis(documentText) {
             try {
                 analysisContainerEl.classList.add('active');
-                analysisContentEl.innerHTML = '<p style="color: #999; font-style: italic;">Analizando documento...</p>';
-
-                const prompt = `Basándote en el siguiente documento sobre una marca, proporciona un análisis conciso en máximo 2 párrafos que incluya:
-
-1. **Qué es la marca**: Describe brevemente qué tipo de empresa o marca es, su industria, y su naturaleza.
-2. **Objetivo de la marca**: Explica cuál es su objetivo principal y qué busca lograr.
-
-El análisis debe ser claro, profesional y escrito en un tono informativo.
-
----
-DOCUMENTO:
-${documentText}
-
----
-Responde SOLO con los 2 párrafos, sin títulos ni numeraciones.`;
-
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        model: 'claude-sonnet-4-20250514',
-                        max_tokens: 500,
-                        messages: [
-                            { role: 'user', content: prompt }
-                        ],
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data.content && data.content.length > 0) {
-                    const analysis = data.content[0].text;
-                    analysisContentEl.innerHTML = `<p>${analysis}</p>`;
-                } else {
-                    analysisContentEl.innerHTML = '<p style="color: #999;">No se pudo generar el análisis. Intenta nuevamente.</p>';
-                }
+                // Usar análisis local basado en palabras clave
+                const analysis = generateDocumentAnalysis(documentText);
+                analysisContentEl.innerHTML = `<p>${analysis}</p>`;
             } catch (error) {
-                console.error('Error en análisis avanzado:', error);
+                console.error('Error en análisis:', error);
                 analysisContentEl.innerHTML = '<p style="color: #FF6B6B;">Error al analizar el documento. Por favor, intenta de nuevo.</p>';
             }
         }
@@ -1023,7 +988,7 @@ Responde SOLO con los 2 párrafos, sin títulos ni numeraciones.`;
         });
 
         function clearAll() {
-            brandNameEl.value = 'MEDUPROX';
+            brandNameEl.value = '';
             textInputEl.value = '';
             fileInputEl.value = '';
             fileNameEl.textContent = 'Seleccionar archivo';
