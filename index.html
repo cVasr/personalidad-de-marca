@@ -771,29 +771,29 @@
             return closest;
         }
 
-        function analyzeDocumentKeywords(text) {
+        function generateDocumentAnalysis(text) {
             const lowerText = text.toLowerCase();
             
             // Palabras clave para identificar tipo de marca
             const brandTypeKeywords = {
                 tech: ['tecnología', 'tecnológico', 'software', 'digital', 'app', 'plataforma', 'desarrollo', 'código', 'sistema', 'innovación', 'disruptivo', 'exponencial'],
-                educacion: ['educación', 'educativo', 'aprendizaje', 'formación', 'estudiantes', 'profesional', 'profesionales', 'cursos', 'capacitación', 'enseñanza', 'conocimiento'],
-                salud: ['salud', 'médico', 'médica', 'bienestar', 'cuidado', 'wellness', 'terapia', 'sanidad', 'salud mental', 'nutrición'],
-                ecommerce: ['tienda', 'compra', 'venta', 'producto', 'productos', 'cliente', 'clientes', 'precio', 'catálogo', 'comercio', 'online'],
-                finanzas: ['dinero', 'inversión', 'banco', 'financiero', 'crédito', 'préstamo', 'ahorro', 'fondos', 'capital', 'bolsa'],
-                marketing: ['marketing', 'publicidad', 'branding', 'marca', 'estrategia', 'comunicación', 'diseño', 'campaña', 'contenido'],
-                servicios: ['servicio', 'servicios', 'cliente', 'clientes', 'consultoría', 'solución', 'soporte', 'asesoría', 'consultor'],
-                comunidad: ['comunidad', 'social', 'red', 'conexión', 'usuarios', 'miembros', 'participación', 'colaboración']
+                educacion: ['educación', 'educativo', 'aprendizaje', 'formación', 'estudiantes', 'profesional', 'profesionales', 'cursos', 'capacitación', 'enseñanza', 'conocimiento', 'certificado'],
+                salud: ['salud', 'médico', 'médica', 'bienestar', 'cuidado', 'wellness', 'terapia', 'sanidad', 'salud mental', 'nutrición', 'clínica'],
+                ecommerce: ['tienda', 'compra', 'venta', 'producto', 'productos', 'cliente', 'clientes', 'precio', 'catálogo', 'comercio', 'online', 'pedido'],
+                finanzas: ['dinero', 'inversión', 'banco', 'financiero', 'crédito', 'préstamo', 'ahorro', 'fondos', 'capital', 'bolsa', 'pago'],
+                marketing: ['marketing', 'publicidad', 'branding', 'marca', 'estrategia', 'comunicación', 'diseño', 'campaña', 'contenido', 'social media'],
+                servicios: ['servicio', 'servicios', 'cliente', 'clientes', 'consultoría', 'solución', 'soporte', 'asesoría', 'consultor', 'profesional'],
+                comunidad: ['comunidad', 'social', 'red', 'conexión', 'usuarios', 'miembros', 'participación', 'colaboración', 'network']
             };
 
             // Palabras clave para objetivos
             const objectiveKeywords = {
-                crecimiento: ['crecimiento', 'escalable', 'expandir', 'exponencial', 'desarrollar', 'ampliar', 'escala', 'global'],
-                accesibilidad: ['accesible', 'democrático', 'inclusivo', 'para todos', 'abierto', 'asequible', 'disponible', 'fácil'],
-                innovacion: ['innovación', 'innovador', 'nuevo', 'disruptivo', 'cambio', 'transformación', 'futuro', 'tecnología'],
-                calidad: ['calidad', 'excelencia', 'premium', 'profesional', 'riguroso', 'estándar', 'confiable'],
-                conexion: ['conexión', 'conectar', 'comunidad', 'relación', 'empatía', 'humanidad', 'cercanía', 'vínculo'],
-                educacion: ['educación', 'educar', 'aprendizaje', 'conocimiento', 'enseñanza', 'formación', 'capacitación']
+                crecimiento: ['crecimiento', 'escalable', 'expandir', 'exponencial', 'desarrollar', 'ampliar', 'escala', 'global', 'mercado', 'liderazgo'],
+                accesibilidad: ['accesible', 'democrático', 'inclusivo', 'para todos', 'abierto', 'asequible', 'disponible', 'fácil', 'simple', 'cercano'],
+                innovacion: ['innovación', 'innovador', 'nuevo', 'disruptivo', 'cambio', 'transformación', 'futuro', 'tecnología', 'avance', 'modernizar'],
+                calidad: ['calidad', 'excelencia', 'premium', 'profesional', 'riguroso', 'estándar', 'confiable', 'sólido', 'certificado', 'acreditado'],
+                conexion: ['conexión', 'conectar', 'comunidad', 'relación', 'empatía', 'humanidad', 'cercanía', 'vínculo', 'unir', 'diálogo'],
+                educacion: ['educación', 'educar', 'aprendizaje', 'conocimiento', 'enseñanza', 'formación', 'capacitación', 'preparación', 'crecimiento profesional']
             };
 
             // Contar palabras clave por tipo
@@ -824,47 +824,59 @@
                 .slice(0, 2)
                 .map(([obj, _]) => obj);
 
-            return { brandType, topObjectives };
-        }
+            const brandName = brandNameEl.value.toUpperCase() || 'LA MARCA';
 
-        function generateDocumentAnalysis(text) {
-            const { brandType, topObjectives } = analyzeDocumentKeywords(text);
-
-            const brandDescriptions = {
-                tech: 'una empresa de tecnología e innovación digital',
-                educacion: 'una plataforma educativa y de formación profesional',
-                salud: 'una empresa de salud y bienestar',
-                ecommerce: 'una plataforma de comercio electrónico',
-                finanzas: 'una institución de servicios financieros',
-                marketing: 'una agencia de marketing y branding',
-                servicios: 'una empresa de servicios profesionales',
-                comunidad: 'una plataforma comunitaria y de conexión social'
+            // Definiciones de tipos de marca
+            const brandDefinitions = {
+                tech: `${brandName} es una empresa de tecnología e innovación digital que ofrece soluciones avanzadas en software y plataformas digitales. Se dedica al desarrollo de sistemas y aplicaciones que transforman la manera en que las personas trabajan y se conectan, utilizando tecnología de punta para resolver problemas complejos.`,
+                educacion: `${brandName} es una plataforma educativa que conecta a profesionales y estudiantes con formación de calidad. Se especializa en ofrecer cursos, certificaciones y programas de capacitación que impulsan el crecimiento profesional y el desarrollo de habilidades en diversos campos del conocimiento.`,
+                salud: `${brandName} es una empresa del sector salud y bienestar que se dedica a mejorar la calidad de vida de las personas a través de servicios, productos y soluciones innovadoras. Su enfoque está en proporcionar acceso a atención, asesoría y recursos que promuevan el bienestar integral.`,
+                ecommerce: `${brandName} es una plataforma de comercio electrónico que facilita la compra y venta de productos de forma segura y conveniente. Ofrece una experiencia de compra en línea intuitiva y confiable, conectando a vendedores y compradores en un mercado digital dinámico.`,
+                finanzas: `${brandName} es una institución de servicios financieros que proporciona soluciones para inversión, ahorro y gestión del dinero. Se dedica a ofrecer productos y asesoría financiera que ayudan a las personas y empresas a alcanzar sus objetivos económicos.`,
+                marketing: `${brandName} es una agencia especializada en marketing y branding que ayuda a las marcas a construir su identidad y comunicarse efectivamente con sus audiencias. Se enfoca en estrategias de comunicación, diseño y campaña que generan impacto y reconocimiento.`,
+                servicios: `${brandName} es una empresa de servicios profesionales que ofrece soluciones especializadas a sus clientes. Se dedica a proporcionar asesoría, soporte y servicios de alta calidad que resuelven necesidades específicas y generan valor tangible.`,
+                comunidad: `${brandName} es una plataforma comunitaria y de conexión social que facilita la interacción, colaboración y creación de redes entre usuarios. Busca crear espacios seguros y significativos donde las personas puedan conectar, compartir y crecer juntas.`
             };
 
-            const objectiveDescriptions = {
-                crecimiento: 'el escalamiento y la expansión de mercado',
-                accesibilidad: 'la democratización y accesibilidad del servicio',
-                innovacion: 'la transformación e innovación constante',
-                calidad: 'la excelencia y la confiabilidad profesional',
-                conexion: 'la construcción de relaciones y comunidad',
-                educacion: 'la educación y el empoderamiento del usuario'
+            const objectiveDefinitions = {
+                crecimiento: 'ser la opción líder en su mercado y expandirse globalmente para impactar a más personas y empresas',
+                accesibilidad: 'democratizar el acceso a sus servicios y hacerlos disponibles para todos, sin importar su contexto o recursos',
+                innovacion: 'transformar constantemente su industria a través de la tecnología y nuevas formas de hacer las cosas',
+                calidad: 'mantener estándares de excelencia y confiabilidad que posicionen a la marca como sinónimo de calidad',
+                conexion: 'construir relaciones significativas y humanizadas que generen impacto emocional y comunitario',
+                educacion: 'empoderar a las personas a través del conocimiento y la formación continua para su crecimiento profesional'
             };
 
-            let analysis = `Esta es ${brandDescriptions[brandType] || 'una marca única y diferenciada'}. `;
+            let whatIs = brandDefinitions[brandType] || `${brandName} es una marca única y diferenciada que ofrece valor significativo a su mercado.`;
 
+            let objective = '';
             if (topObjectives.length > 0) {
-                analysis += 'Su objetivo principal se enfoca en ';
-                if (topObjectives.length === 1) {
-                    analysis += objectiveDescriptions[topObjectives[0]] + '.';
-                } else {
-                    analysis += objectiveDescriptions[topObjectives[0]] + ' y en ' + 
-                                objectiveDescriptions[topObjectives[1]] + '.';
-                }
+                objective = 'Su objetivo principal es ' + topObjectives.map(obj => objectiveDefinitions[obj]).join(' y ') + '.';
             } else {
-                analysis += 'Busca proporcionar valor significativo a su audiencia.';
+                objective = 'Su objetivo es proporcionar valor significativo a sus clientes y contribuir positivamente a su industria.';
             }
 
-            return analysis;
+            // Generar párrafos más descriptivos
+            let additionalContext = '';
+            if (brandScores[brandType] > 5) {
+                const contextKeywords = {
+                    tech: 'Busca estar a la vanguardia de la transformación digital.',
+                    educacion: 'Busca democratizar el acceso a educación de calidad.',
+                    salud: 'Busca mejorar la calidad de vida de quienes confían en sus servicios.',
+                    ecommerce: 'Busca simplificar y segurizar la experiencia de compra en línea.',
+                    finanzas: 'Busca facilitar la toma de decisiones financieras informadas.',
+                    marketing: 'Busca que las marcas conecten auténticamente con sus audiencias.',
+                    servicios: 'Busca establecerse como un aliado confiable para sus clientes.',
+                    comunidad: 'Busca crear espacios de colaboración e intercambio de valor.'
+                };
+                additionalContext = ' ' + (contextKeywords[brandType] || '');
+            }
+
+            return `<h4 style="color: #BF1744; font-size: 16px; margin-bottom: 12px; margin-top: 0;">¿Qué es ${brandName}?</h4>
+            <p style="margin-bottom: 16px;">${whatIs}${additionalContext}</p>
+            
+            <h4 style="color: #BF1744; font-size: 16px; margin-bottom: 12px; margin-top: 16px;">Objetivo de ${brandName}</h4>
+            <p style="margin-bottom: 0;">${objective}</p>`;
         }
 
         function displayDocumentAnalysis(text) {
